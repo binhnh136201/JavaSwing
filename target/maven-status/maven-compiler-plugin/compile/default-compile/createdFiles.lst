@@ -1,5 +1,5 @@
+Models\Room.class
 Controllers\RoomDAO.class
 JavaSwing.class
-Models\Room.class
 Views\AddRoomForm$1.class
 Views\AddRoomForm.class
