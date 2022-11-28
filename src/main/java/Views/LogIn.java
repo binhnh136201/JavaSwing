@@ -43,8 +43,8 @@ public class LogIn {
                 String pass = String.valueOf(passText.getPassword());
                 user.setUsername(userText.getText());
                 user.setPassword(pass);
-                boolean check =  logInController.checkAuth(User user);
-
+                boolean check =  logInController.checkAuth(user);
+                System.out.println(check);
                 if (userText.getText().equals(user.getUsername()) && pass.equals(user.getPassword())) {
                     JOptionPane.showMessageDialog(frame,"Success");
                 }else {

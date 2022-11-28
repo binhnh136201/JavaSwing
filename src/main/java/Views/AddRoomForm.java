@@ -4,7 +4,7 @@
  */
 package Views;
 import Models.Room;
-import Controllers.RoomDAO;
+
 /**
  *
  * @author binhn
@@ -25,9 +25,7 @@ public class AddRoomForm extends javax.swing.JFrame {
                 room.setType(jTextField3.getText());
                 room.setDisplayPrice(Float.parseFloat(jTextField4.getText()));
                 room.setDescription(jTextField5.getText());
-                
-                RoomDAO roomDAO = new RoomDAO();
-                roomDAO.addRoom(room);
+
         }
         
         public void resetRoomForm() {

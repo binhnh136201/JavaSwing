@@ -6,7 +6,7 @@ public class LogInController {
     String userName = "binhnh";
     String password = "123";
 
-    boolean checkAuth(User userForm) {
+    public boolean checkAuth(User userForm) {
         if (userForm.getUsername().equals(userName) && userForm.getPassword().equals(password)) {
             return true;
         }else {
