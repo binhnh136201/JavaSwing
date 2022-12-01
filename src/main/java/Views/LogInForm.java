@@ -57,7 +57,7 @@ public class LogInForm {
         logInFrame.setSize(500, 300);
         logInFrame.setVisible(true);
 
-        
+
 
     }
 }
