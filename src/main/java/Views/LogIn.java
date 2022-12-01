@@ -44,11 +44,12 @@ public class LogIn {
                 user.setUsername(userText.getText());
                 user.setPassword(pass);
                 boolean check =  logInController.checkAuth(user);
-                System.out.println(check);
-                if (userText.getText().equals(user.getUsername()) && pass.equals(user.getPassword())) {
+                if (check) {
                     JOptionPane.showMessageDialog(frame,"Success");
+                    System.out.println("success");
                 }else {
                     JOptionPane.showMessageDialog(frame,"Fail");
+                    System.out.println("fail");
                 }
 
             }

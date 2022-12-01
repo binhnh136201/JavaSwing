@@ -1,8 +1,8 @@
 package Models;
 
 public class User {
-    private String username = "binhnh";
-    private String password = "123";
+    private String username;
+    private String password;
 
     public User() {
 
