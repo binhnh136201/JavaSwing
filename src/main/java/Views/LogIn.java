@@ -41,7 +41,7 @@ public class LogIn {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String pass = String.valueOf(passText.getPassword());
-                user.setUsername(userText.getText());
+                user.setName(userText.getText());
                 user.setPassword(pass);
                 boolean check =  logInController.checkAuth(user);
                 if (check) {

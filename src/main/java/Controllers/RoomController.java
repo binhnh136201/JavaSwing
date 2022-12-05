@@ -1,13 +1,16 @@
 package Controllers;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import Models.User;
+
+import javax.swing.plaf.nimbus.State;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class RoomController {
     static Connection con;
+    static User user;
 
-    RoomController() {
+    public RoomController() {
 
     }
 
@@ -18,21 +21,48 @@ public class RoomController {
             "jdbc:mysql://localhost:3306/test";
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "123456";
+    private static String[][] dt;
+    private static int i = 0;
 
-    public static void main(String args[]){
+    public static Connection getConnection() {
         Connection conn = null;
-        try{
+        try {
             //Open the connection
             conn = DriverManager.
                     getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            Statement state = conn.createStatement();
+            ResultSet resultSet = state.executeQuery("SELECT * FROM  teacher;");
+            /*while (resultSet.next()) {
+            }*/
 
-            if(conn != null){
-                System.out.println("Successfully connected.");
-            }else{
-                System.out.println("Failed to connect.");
+
+            if (conn != null) {
+                System.out.println("success");
+            } else {
+                System.out.println("fail");
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        return conn;
+    }
+
+    public ArrayList<User> getTeacher() throws SQLException {
+        ArrayList<User> listTeacher = new ArrayList<>();
+        user = new User();
+        Connection conn = getConnection();
+        Statement statement = con.createStatement();
+        ResultSet resultSet = statement.executeQuery("Select * from teacher;");
+        while (resultSet.next()) {
+            int teacherId = resultSet.getInt(1);
+            String teacherName = resultSet.getString(2);
+            String teacherPhone = resultSet.getString(3);
+            user.setId(teacherId);
+            user.setName(teacherName);
+            user.setPhone_number(teacherPhone);
+            listTeacher.add(user);
+        }
+        conn.close();
+        return listTeacher;
     }
 }
