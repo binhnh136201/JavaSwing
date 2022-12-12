@@ -4,7 +4,7 @@ import Controllers.RoomController;
 import Models.User;
 
 import javax.swing.*;
-import java.awt.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -13,47 +13,143 @@ import java.util.ArrayList;
 import static Controllers.RoomController.getConnection;
 
 public class UserTableForm {
+    ArrayList<User> listStudents = new ArrayList<>();
+    RoomController roomController = new RoomController();
+    User GetUser;
+
     JFrame frame;
     JTable userTable;
     JButton addButton;
     JButton modifyButton;
-    JButton refreshButton;
 
+    // Add function
     JLabel nameLabel;
     JLabel phoneNumberLabel;
     JTextField nameText;
     JTextField phoneNumberText;
-    JButton add2Button;
+    JButton addToTableButton;
 
+    // Modify function
+    JButton updateButton;
 
-    String[][] data = new String[10][3];
-    String[] columnNames = { "Id", "Name", "Phone Number" };
-    int i = 0;
+    // Delete function
+    JButton deleteButton;
+
+    DefaultTableModel tableModel = new DefaultTableModel();
 
     UserTableForm() throws SQLException {
-        /*listTeachers = roomController.getTeacher();
-        for (int i = 0; i < listTeachers.size(); i++) {
-            data[i][0] = listTeachers.get(i).getId() + "";
-            data[i][1] = listTeachers.get(i).getName();
-            data[i][2] = listTeachers.get(i).getPhone_number();
-        }*/
 
+        // Initiate form
+        frame = new JFrame();
+        frame.setSize(500, 500);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        // Add button
+        addButton = new JButton("Add");
+        addButton.setBounds(50, 350, 150, 50);
+        frame.add(addButton);
+
+        ActionListener addActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame2 = new JFrame();
+                frame2.add(nameLabel);
+                frame2.add(nameText);
+                frame2.add(phoneNumberLabel);
+                frame2.add(phoneNumberText);
+                frame2.add(addToTableButton);
+
+
+                frame2.setLayout(null);
+                frame2.setSize(400, 400);
+                frame2.setVisible(true);
+            }
+        };
+        addButton.addActionListener(addActionListener);
+
+        // Modify button
+        modifyButton = new JButton("Modify");
+        modifyButton.setBounds(200, 350, 150, 50);
+        frame.add(modifyButton);
+
+        ActionListener modifyActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame modifyFrame = new JFrame();
+                GetUser = listStudents.get(userTable.getSelectedRow());
+
+                modifyFrame.add(nameLabel);
+                modifyFrame.add(nameText);
+                modifyFrame.add(phoneNumberLabel);
+                modifyFrame.add(phoneNumberText);
+                modifyFrame.add(updateButton);
+
+                nameText.setText(GetUser.getName());
+                phoneNumberText.setText(GetUser.getPhone_number());
+
+
+                modifyFrame.setLayout(null);
+                modifyFrame.setSize(400, 400);
+                modifyFrame.setVisible(true);
+            }
+        };
+        modifyButton.addActionListener(modifyActionListener);
+
+        // Delete button
+        deleteButton = new JButton("Delete");
+        deleteButton.setBounds(350, 350, 150, 50);
+        frame.add(deleteButton);
+
+        ActionListener deleteActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    GetUser = listStudents.get(userTable.getSelectedRow());
+                    roomController.deleteUser(GetUser);
+                    tableModel.setRowCount(0);
+                    listStudents = roomController.getTeacher();
+                    for (User user: listStudents) {
+                        tableModel.addRow( new Object[] {user.getId(), user.getName(), user.getPhone_number()});
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
+        deleteButton.addActionListener(deleteActionListener);
+
+        // Initiate table
+        listStudents = roomController.getTeacher(); // Get data
+        userTable = new JTable(tableModel);
+        tableModel.addColumn("id");
+        tableModel.addColumn("name");
+        tableModel.addColumn("phone_number");
+
+        for (User user: listStudents) {
+            tableModel.addRow( new Object[] {user.getId(), user.getName(), user.getPhone_number()});
+        }
+
+        JScrollPane sp = new JScrollPane(userTable);
+        frame.add(sp);
+
+        // Add function
         nameLabel = new JLabel("Name");
         nameLabel.setBounds(0, 50, 50, 50);
+
+        nameText = new JTextField();
+        nameText.setBounds(150, 50, 150, 50);
 
         phoneNumberLabel = new JLabel("Phone number");
         phoneNumberLabel.setBounds(0, 100, 50, 50);
 
-        nameText = new JTextField();
-        nameText.setBounds(50, 50, 100, 50);
-
         phoneNumberText = new JTextField();
-        phoneNumberText.setBounds(50, 100, 100, 50);
+        phoneNumberText.setBounds(150, 100, 150, 50);
 
-        add2Button = new JButton("Add");
-        add2Button.setBounds(100, 150, 100, 50);
+        addToTableButton = new JButton("Add");
+        addToTableButton.setBounds(100, 150, 100, 50);
 
-        ActionListener add2ActionListener = new ActionListener() {
+        ActionListener addToTableActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String getName = nameText.getText();
@@ -65,86 +161,43 @@ public class UserTableForm {
                     preparedStatement.setString(2, getPhone);
                     preparedStatement.execute();
                     con.close();
+
+                    tableModel.setRowCount(0);
+                    listStudents = roomController.getTeacher();
+                    for (User user: listStudents) {
+                        tableModel.addRow( new Object[] {user.getId(), user.getName(), user.getPhone_number()});
+                    }
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
             }
         };
-        add2Button.addActionListener(add2ActionListener);
+        addToTableButton.addActionListener(addToTableActionListener);
 
+        // Modify function
+        updateButton = new JButton("Update");
+        updateButton.setBounds(100, 150, 100, 50);
 
-        Connection con = getConnection();
-        Statement statement = con.createStatement();
-        ResultSet rs = statement.executeQuery("Select * from student");
-        while (rs.next()) {
-            data[i][0] = rs.getInt(1) + "";
-            data[i][1] = rs.getString(2);
-            data[i][2] = rs.getString(3);
-            i++;
-        }
-
-        frame = new JFrame();
-
-        userTable = new JTable(data, columnNames);
-        userTable.setBounds(0, 0, 200, 300);
-
-        JScrollPane sp = new JScrollPane(userTable);
-        addButton = new JButton("Add");
-        addButton.setBounds(100, 350, 100, 50);
-        frame.add(addButton);
-        ActionListener addActionListener = new ActionListener() {
+        ActionListener updateActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Connection con = getConnection();
-                    Statement statement = con.createStatement();
-                    PreparedStatement preparedStatement = con.prepareStatement("Insert into teacher(id, name, phone_number)" + "Values (?, ?, ?)");
-                    preparedStatement.setInt(1, 5);
-                    preparedStatement.setString(2, "abc");
-                    preparedStatement.setString(3, "xyz");
+                    GetUser.setName(nameText.getText());
+                    GetUser.setPhone_number(phoneNumberText.getText());
 
-                    preparedStatement.execute();
-                    con.close();
+                    roomController.updateUser(GetUser);
+
+                    tableModel.setRowCount(0);
+                    listStudents = roomController.getTeacher();
+                    for (User user: listStudents) {
+                        tableModel.addRow( new Object[] {user.getId(), user.getName(), user.getPhone_number()});
+                    }
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
-
             }
         };
-        addButton.addActionListener(addActionListener);
-
-        modifyButton = new JButton("Modify");
-        modifyButton.setBounds(200, 350, 100, 50);
-        frame.add(modifyButton);
-
-        refreshButton = new JButton("Refresh");
-        refreshButton.setBounds(300, 350, 100, 50);
-        frame.add(refreshButton);
-
-        ActionListener refreshActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame2 = new JFrame();
-                frame2.add(nameLabel);
-                frame2.add(nameText);
-                frame2.add(phoneNumberLabel);
-                frame2.add(phoneNumberText);
-                frame2.add(add2Button);
-
-                frame2.setLayout(null);
-                frame2.setSize(300, 300);
-                frame2.setVisible(true);
-            }
-        };
-        refreshButton.addActionListener(refreshActionListener);
-
-        frame.add(sp);
-
-        con.close();
-
-        frame.setSize(500, 500);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        updateButton.addActionListener(updateActionListener);
     }
 
     public static void main(String[] args) {

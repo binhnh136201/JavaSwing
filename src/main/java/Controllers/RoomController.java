@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class RoomController {
-    static Connection con;
+    static Connection conn;
     static User user;
 
     public RoomController() {
@@ -49,20 +49,42 @@ public class RoomController {
 
     public ArrayList<User> getTeacher() throws SQLException {
         ArrayList<User> listTeacher = new ArrayList<>();
-        user = new User();
-        Connection conn = getConnection();
-        Statement statement = con.createStatement();
-        ResultSet resultSet = statement.executeQuery("Select * from teacher;");
+        conn = DriverManager.
+                getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+        Statement statement = conn.createStatement();
+        ResultSet resultSet = statement.executeQuery("Select * from student;");
         while (resultSet.next()) {
-            int teacherId = resultSet.getInt(1);
-            String teacherName = resultSet.getString(2);
-            String teacherPhone = resultSet.getString(3);
-            user.setId(teacherId);
-            user.setName(teacherName);
-            user.setPhone_number(teacherPhone);
+            user = new User();
+            int studentId = resultSet.getInt(1);
+            String studentName = resultSet.getString(2);
+            String studentPhone = resultSet.getString(3);
+            user.setId(studentId);
+            user.setName(studentName);
+            user.setPhone_number(studentPhone);
             listTeacher.add(user);
         }
         conn.close();
         return listTeacher;
+    }
+
+    public void updateUser(User user) throws SQLException {
+        conn = DriverManager.
+                getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+
+        String query = "UPDATE student SET name = \"" + user.getName() +
+                "\" , phone_number = \" " + user.getPhone_number() +
+                "\" WHERE id = " + user.getId();
+        System.out.println(query);
+        Statement statement = conn.createStatement();
+        statement.executeUpdate(query);
+        conn.close();
+    }
+
+    public void deleteUser(User user) throws SQLException {
+        conn = DriverManager.
+                getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+        String query = "DELETE FROM student WHERE id = " + user.getId();
+        Statement statement = conn.createStatement();
+        statement.executeUpdate(query);
     }
 }
