@@ -4,7 +4,10 @@ import Controllers.RoomController;
 import Models.User;
 
 import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -38,17 +41,67 @@ public class UserTableForm {
     DefaultTableModel tableModel = new DefaultTableModel();
 
     UserTableForm() throws SQLException {
-
         // Initiate form
         frame = new JFrame();
         frame.setSize(500, 500);
-        frame.setLocationRelativeTo(null);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(dim.width/2 - frame.getSize().width/2, dim.height/2 - frame.getSize().height/2);
         frame.setVisible(true);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        panel.setVisible(false);
+
+        // JMenu
+        JMenuBar menuBar = new JMenuBar();
+        JMenu manageAcc = new JMenu("Quan ly tai khoan");
+        JMenu manageStaff = new JMenu("Quan ly nhan vien");
+        JMenu stat = new JMenu("Thong ke");
+
+        menuBar.add(manageAcc);
+        menuBar.add(manageStaff);
+        menuBar.add(stat);
+
+        MenuListener manageStaffListener = new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                panel.setVisible(true);
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {
+                panel.setVisible(false);
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {
+
+            }
+        };
+        manageStaff.addMenuListener(manageStaffListener);
+
+        frame.setJMenuBar(menuBar);
+
+
+        // Initiate table
+        listStudents = roomController.getTeacher(); // Get data
+        userTable = new JTable(tableModel);
+        tableModel.addColumn("id");
+        tableModel.addColumn("name");
+        tableModel.addColumn("phone_number");
+
+        for (User user: listStudents) {
+            tableModel.addRow( new Object[] {user.getId(), user.getName(), user.getPhone_number()});
+        }
+
+        JScrollPane sp = new JScrollPane(userTable);
+        sp.setBounds(0, 0, 500, 300);
+        panel.add(sp);
 
         // Add button
         addButton = new JButton("Add");
-        addButton.setBounds(50, 350, 150, 50);
-        frame.add(addButton);
+        addButton.setBounds(25, 350, 150, 50);
+        panel.add(addButton);
 
         ActionListener addActionListener = new ActionListener() {
             @Override
@@ -70,8 +123,8 @@ public class UserTableForm {
 
         // Modify button
         modifyButton = new JButton("Modify");
-        modifyButton.setBounds(200, 350, 150, 50);
-        frame.add(modifyButton);
+        modifyButton.setBounds(175, 350, 150, 50);
+        panel.add(modifyButton);
 
         ActionListener modifyActionListener = new ActionListener() {
             @Override
@@ -98,8 +151,8 @@ public class UserTableForm {
 
         // Delete button
         deleteButton = new JButton("Delete");
-        deleteButton.setBounds(350, 350, 150, 50);
-        frame.add(deleteButton);
+        deleteButton.setBounds(325, 350, 150, 50);
+        panel.add(deleteButton);
 
         ActionListener deleteActionListener = new ActionListener() {
             @Override
@@ -119,29 +172,17 @@ public class UserTableForm {
         };
         deleteButton.addActionListener(deleteActionListener);
 
-        // Initiate table
-        listStudents = roomController.getTeacher(); // Get data
-        userTable = new JTable(tableModel);
-        tableModel.addColumn("id");
-        tableModel.addColumn("name");
-        tableModel.addColumn("phone_number");
-
-        for (User user: listStudents) {
-            tableModel.addRow( new Object[] {user.getId(), user.getName(), user.getPhone_number()});
-        }
-
-        JScrollPane sp = new JScrollPane(userTable);
-        frame.add(sp);
+        frame.add(panel);
 
         // Add function
         nameLabel = new JLabel("Name");
-        nameLabel.setBounds(0, 50, 50, 50);
+        nameLabel.setBounds(0, 50, 150, 50);
 
         nameText = new JTextField();
         nameText.setBounds(150, 50, 150, 50);
 
         phoneNumberLabel = new JLabel("Phone number");
-        phoneNumberLabel.setBounds(0, 100, 50, 50);
+        phoneNumberLabel.setBounds(0, 100, 150, 50);
 
         phoneNumberText = new JTextField();
         phoneNumberText.setBounds(150, 100, 150, 50);

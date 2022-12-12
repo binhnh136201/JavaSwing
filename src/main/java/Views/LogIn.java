@@ -2,11 +2,14 @@ package Views;
 
 
 import Controllers.LogInController;
+import Controllers.RoomController;
 import Models.User;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class LogIn {
@@ -16,7 +19,7 @@ public class LogIn {
     JPasswordField passText;
     JButton logInButton, resetButton;
     User user = new User();
-    LogInController logInController = new LogInController();
+    RoomController roomController = new RoomController();
 
     public LogIn() {
         frame = new JFrame("Log In");
@@ -40,18 +43,21 @@ public class LogIn {
         ActionListener logInAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String pass = String.valueOf(passText.getPassword());
-                user.setName(userText.getText());
-                user.setPassword(pass);
-                boolean check =  logInController.checkAuth(user);
-                if (check) {
-                    JOptionPane.showMessageDialog(frame,"Success");
-                    System.out.println("success");
-                }else {
-                    JOptionPane.showMessageDialog(frame,"Fail");
-                    System.out.println("fail");
+                try {
+                    String pass = String.valueOf(passText.getPassword());
+                    user.setName(userText.getText());
+                    user.setPassword(pass);
+                    boolean check = roomController.logIn(user);
+                    if (check) {
+                        UserTableForm userTableForm = new UserTableForm();
+                        frame.setVisible(false);
+                    }else {
+                        JOptionPane.showMessageDialog(frame,"Fail");
+                        System.out.println("fail");
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
-
             }
         };
 
@@ -74,7 +80,9 @@ public class LogIn {
         frame.add(resetButton);
 
         frame.setLayout(null);
-        frame.setSize(500, 400);
+        frame.setSize(500, 500);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(dim.width/2 - frame.getSize().width/2, dim.height/2 - frame.getSize().height/2);
         frame.setVisible(true);
     }
 

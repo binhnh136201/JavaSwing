@@ -9,20 +9,16 @@ import java.util.ArrayList;
 public class RoomController {
     static Connection conn;
     static User user;
-
+    static boolean success;
     public RoomController() {
 
     }
 
     //JDBC and database properties.
-    private static final String DB_DRIVER =
-            "com.mysql.jdbc.Driver";
     private static final String DB_URL =
             "jdbc:mysql://localhost:3306/test";
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "123456";
-    private static String[][] dt;
-    private static int i = 0;
 
     public static Connection getConnection() {
         Connection conn = null;
@@ -45,6 +41,20 @@ public class RoomController {
             e.printStackTrace();
         }
         return conn;
+    }
+
+    public boolean logIn(User user) throws SQLException {
+        success = false;
+        conn = DriverManager.
+                getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+        Statement statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery("SELECT * FROM teacher;");
+        while (rs.next()) {
+            if (user.getName().equals(rs.getString(2)) && user.getPassword().equals(rs.getString(3))) {
+                success = true;
+            }
+        }
+        return success;
     }
 
     public ArrayList<User> getTeacher() throws SQLException {
